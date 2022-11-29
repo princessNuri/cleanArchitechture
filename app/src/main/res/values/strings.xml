@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">7mon_practice</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="createdAt">23 Ноября 23:00</string>
+    <string name="enter_note_title">Enter note title</string>
+    <string name="enter_note_description">Enter note description</string>
+    <string name="save">Save</string>
 </resources>
