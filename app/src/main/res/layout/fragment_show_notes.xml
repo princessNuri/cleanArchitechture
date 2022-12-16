@@ -17,6 +17,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="@dimen/size_40"
         android:layout_height="@dimen/size_40"
+        android:id="@+id/fab"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/size_twelve"
         android:layout_marginEnd="@dimen/size_twelve" />

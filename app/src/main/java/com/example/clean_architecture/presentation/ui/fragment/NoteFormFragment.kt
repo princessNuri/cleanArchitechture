@@ -10,38 +10,74 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.clean_architecture.R
 import com.example.clean_architecture.databinding.FragmentNoteFormBinding
+import com.example.clean_architecture.domain.model.Note
 import com.example.clean_architecture.presentation.UIState
 import kotlinx.coroutines.launch
 
-class NoteFormFragment : Fragment() {
+class NoteFormFragment : BaseFragment(R.layout.fragment_note_form) {
 
     private val formViewModel : NoteFormViewModel by viewModels()
-    lateinit var binding: FragmentNoteFormBinding
+    private val binding: FragmentNoteFormBinding by viewBinding(FragmentNoteFormBinding::bind)
+    override fun initialize() {}
+    override fun setUpRequests() {}
+    override fun setUpObservers() {}
+    override fun setUpClickListeners() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= FragmentNoteFormBinding.inflate(layoutInflater)
 
-        //formViewModel.createNote()
+        binding.btnSave.setOnClickListener {
+            formViewModel.createNote(
+                Note(
+                    title = binding.etTitle.toString(),
+                    description = binding.etDescription.toString(),
+                    createdAt = System.currentTimeMillis()
+                )
+            )
+        }
 
         lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                formViewModel.createNoteState.collect{state->
-                    when(state){
-                        is UIState.Loading->{
-
-                        }
-                        is UIState.Error->{
-                            Toast.makeText(requireActivity(), state.message, Toast.LENGTH_SHORT).show()
-                        }
-                        is UIState.Success->{
-
-                        }
-                        is UIState.Empty->{}
+                formViewModel.createNoteState.collectState(
+                    onLoading = {
+                        //TODO show progress bar
+                    },
+                    onError = {message->
+                        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
+                    },
+                    onSuccess = {
+                        Toast.makeText(requireActivity(), "Successfully created!", Toast.LENGTH_SHORT).show()
                     }
-                }
+                )
+            }
+        }
+
+        formViewModel.editNote(
+            Note(
+                title = binding.etTitle.toString(),
+                description = binding.etDescription.toString(),
+                createdAt = System.currentTimeMillis()
+            )
+        )
+
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                formViewModel.editNoteState.collectState(
+                    onLoading = {
+                        //TODO show progress bar
+                    },
+                    onError = {message->
+                        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
+                    },
+                    onSuccess = {
+                        Toast.makeText(requireActivity(), "Successfully edited!", Toast.LENGTH_SHORT).show()
+                        findNavController().navigateUp()
+                    }
+                )
             }
         }
 
